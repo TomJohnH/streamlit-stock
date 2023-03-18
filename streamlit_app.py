@@ -10,9 +10,16 @@ st.title("Stock Data Analysis")
 n_window = 14
 
 # allow user to upload a CSV file containing stock data
-uploaded_file = st.file_uploader("Upload CSV", type=["csv"])
+uploaded_file = st.file_uploader(
+    "Upload stock quotes *.csv",
+    type=["csv"],
+    help="The file has to have at least a Date column and a Close column. Stock quotes should be sorted from oldest to newest. ",
+)
 
-years = st.slider("How many years of data take into account?", 1, 20, 1)
+if st.checkbox("Use example file"):
+    uploaded_file = "pko_d.csv"
+
+years = st.slider("How many years of data take into account?", 1, 20, 20)
 
 
 if uploaded_file is not None:
