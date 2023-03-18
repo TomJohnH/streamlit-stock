@@ -1,5 +1,5 @@
 pandas
 numpy == 1.23.5
-matplotlib.pyplot
+matplotlib ==3.4.2
 plotly.express
 scikit-learn
