@@ -3,3 +3,4 @@ numpy
 sklearn.metrics.pairwise
 matplotlib.pyplot
 plotly.express
+sklearn
