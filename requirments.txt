@@ -2,4 +2,4 @@ pandas
 numpy
 matplotlib.pyplot
 plotly.express
-scikit-learn == 1.2.2
+scikit-learn
