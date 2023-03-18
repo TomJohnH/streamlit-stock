@@ -1,6 +1,5 @@
 pandas
 numpy
-sklearn.metrics.pairwise
 matplotlib.pyplot
 plotly.express
-scikit-learn
+scikit-learn == 1.2.2
