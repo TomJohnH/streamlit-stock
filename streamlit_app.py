@@ -29,8 +29,8 @@ if uploaded_file is not None:
     df = df[-years * 365 :]
     rolling_window = df["Close"].rolling(window=n_window)
 
-    dfa = [window.to_list() for window in rolling_window]
-    st.write(dfa)
+    # dfa = [window.to_list() for window in rolling_window]
+    # st.write(dfa)
 
     # define a function to compute the similarity between the last 14 days and each 14-day window in the dataset
     def compute_similarity(window):
@@ -45,17 +45,11 @@ if uploaded_file is not None:
     # compute the similarity between the last 7 days and each 7-day window in the dataset
     similarity_scores = rolling_window.apply(compute_similarity, raw=False)
     similarity_scores = similarity_scores.fillna(value=0)
-    st.write(similarity_scores)
+    # st.write(similarity_scores)
     # sort the similarity scores in descending order
     top_similarities = similarity_scores.argsort()[-10:]
-    st.write(top_similarities)
-    st.write(similarity_scores[top_similarities])
-
-    arr = np.array([0.998, 0.997, 0.999, 0.9985, 5.9])
-    idx = np.argsort(arr)
-    sorted_arr = arr[idx]
-
-    st.write(sorted_arr)
+    # st.write(top_similarities)
+    # st.write(similarity_scores[top_similarities])
 
     # st.write(df["Close"].iloc[953])
 
@@ -80,7 +74,7 @@ if uploaded_file is not None:
         null_series = pd.Series([None] * 7)
 
         # has to be done in order to provide correct window
-        index = index - 13
+        index = index - (n_window - 1)
 
         # concatenate the original series and the null series
 
