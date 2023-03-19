@@ -8,6 +8,15 @@ import plotly.express as px
 st.title("Stock Data Analysis")
 
 
+######
+#
+#   This will be replaced by conection to the database
+#
+######
+
+example = """<ul> <li>2008-08-28: Fed approves $200 billion emergency loan program for banks</li> <li>2008-08-29: Fannie Mae and Freddie Mac shares plunge amid bailout fears</li> <li>2008-09-02: Lehman Brothers reports $3.9 billion loss, plans to sell assets</li> <li>2008-09-07: US government takes over Fannie Mae and Freddie Mac</li> <li>2008-09-08: Bank of America agrees to buy Merrill Lynch for $50 billion</li> <li>2008-09-15: Lehman Brothers files for bankruptcy, AIG seeks federal aid</li> <li>2008-09-16: Fed bails out AIG with $85 billion loan, Barclays buys Lehman’s US assets</li> <li>2008-09-17: Fed lends $180 billion to foreign central banks, SEC bans short-selling of financial stocks</li> <li>2008-09-18: Treasury proposes $700 billion bailout plan for financial firms</li> <li>2008-09-19: Fed and other central banks inject $180 billion into money markets, US stocks rally</li> <li>2008-09-21: Goldman Sachs and Morgan Stanley become bank holding companies</li> <li>2008-09-23: Fed lends $30 billion to JPMorgan Chase to buy Bear Stearns’ assets</li> <li>2008-09-25: Washington Mutual seized by regulators, sold to JPMorgan Chase</li>"""
+
+
 # allow user to upload a CSV file containing stock data
 uploaded_file = st.file_uploader(
     "Upload stock quotes *.csv",
@@ -82,16 +91,16 @@ if uploaded_file is not None:
 
         df1_14 = pd.concat([df1, null_series])
 
-        df3 = df["Close"].iloc[index : index + 21]
+        df_past = df["Close"].iloc[index : index + 21]
 
-        if len(df3) == 21:
+        if len(df_past) == 21:
 
             st.markdown("---")
             st.write("**Case " + str(i) + "**")
             adjusted = st.checkbox("Scale result?", key=index)
 
             if adjusted:
-                df3 = df3 * (df["Close"].iloc[-14:][0] / df3[0])
+                df_past = df_past * (df["Close"].iloc[-14:][0] / df_past[0])
 
             col1, col2, col3 = st.columns(3)
             with col1:
@@ -99,11 +108,22 @@ if uploaded_file is not None:
                 st.write(df1)
             with col2:
                 st.write("**Similar case from the past**")
-                st.write(df3)
+                st.write(df_past)
             with col3:
                 # Plot the datasets
                 st.write("**Plot**")
-                plot_dataframes(df1_14, df3)
+                plot_dataframes(df1_14, df_past)
                 st.write("Similarity score")
                 st.write(similarity_scores.iloc[index + 13])
+            st.write(
+                "**Financial market headlines published from "
+                + str(df.iloc[index].name)
+                + "**"
+            )
+            if str(df.iloc[index].name) == "2008-08-28":
+                st.markdown(example, unsafe_allow_html=True)
+            else:
+                st.write("Coming soon")
             i += 1
+
+# Could you provide me with financial market headlines published on 2008-09-16. Present them in html code. Do not add references in list.
