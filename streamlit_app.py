@@ -7,7 +7,6 @@ import plotly.express as px
 
 st.title("Stock Data Analysis")
 
-n_window = 14
 
 # allow user to upload a CSV file containing stock data
 uploaded_file = st.file_uploader(
@@ -23,27 +22,42 @@ years = st.slider("How many years of data take into account?", 1, 20, 20)
 
 
 if uploaded_file is not None:
+    n_window = 14
     df = pd.read_csv(uploaded_file)
     df = df.set_index("Date")
-    # create a rolling window of 7 days
+    # create a rolling window of 14 days
     df = df[-years * 365 :]
     rolling_window = df["Close"].rolling(window=n_window)
 
-    # define a function to compute the similarity between the last 7 days and each 7-day window in the dataset
+    dfa = [window.to_list() for window in rolling_window]
+    st.write(dfa)
+
+    # define a function to compute the similarity between the last 14 days and each 14-day window in the dataset
     def compute_similarity(window):
-        last_seven_days = df["Close"].iloc[-n_window:]
+        last_n_days = df["Close"].iloc[-n_window:]
         similarity_scores = cosine_similarity(
-            last_seven_days.values.reshape(1, -1), window.values.reshape(1, -1)
+            last_n_days.values.reshape(1, -1), window.values.reshape(1, -1)
         )
+        # st.write(window.values)
+        # st.write(similarity_scores)
         return similarity_scores[0]
 
     # compute the similarity between the last 7 days and each 7-day window in the dataset
     similarity_scores = rolling_window.apply(compute_similarity, raw=False)
+    similarity_scores = similarity_scores.fillna(value=0)
+    st.write(similarity_scores)
     # sort the similarity scores in descending order
-    top_five_similarities = np.argsort(similarity_scores)[-10:]
-    # st.write(top_five_similarities)
-    # st.write(similarity_scores)
-    # plot the projected closing data for each of the 5 most similar patterns
+    top_similarities = similarity_scores.argsort()[-10:]
+    st.write(top_similarities)
+    st.write(similarity_scores[top_similarities])
+
+    arr = np.array([0.998, 0.997, 0.999, 0.9985, 5.9])
+    idx = np.argsort(arr)
+    sorted_arr = arr[idx]
+
+    st.write(sorted_arr)
+
+    # st.write(df["Close"].iloc[953])
 
     def plot_dataframes(df1, df2):
         # Create the plots
@@ -60,10 +74,13 @@ if uploaded_file is not None:
 
     st.write("Top 5 most similar patterns:")
     i = 1
-    for index in top_five_similarities:
+    for index in top_similarities:
         # plot the last 14 days
         # create a series with 7 null values
         null_series = pd.Series([None] * 7)
+
+        # has to be done in order to provide correct window
+        index = index - 13
 
         # concatenate the original series and the null series
 
@@ -71,7 +88,6 @@ if uploaded_file is not None:
 
         df1_14 = pd.concat([df1, null_series])
 
-        # df2 = df["Close"].iloc[index : index + 7]
         df3 = df["Close"].iloc[index : index + 21]
 
         if len(df3) == 21:
@@ -95,5 +111,5 @@ if uploaded_file is not None:
                 st.write("**Plot**")
                 plot_dataframes(df1_14, df3)
                 st.write("Similarity score")
-                st.write(similarity_scores[index])
+                st.write(similarity_scores.iloc[index + 13])
             i += 1
