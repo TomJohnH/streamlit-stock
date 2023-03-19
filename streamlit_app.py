@@ -3,16 +3,8 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 import matplotlib.pyplot as plt
-import plotly.express as px
 
-st.title("Stock Data Analysis")
-
-
-######
-#
-#   This will be replaced by conection to the database
-#
-######
+st.title("Yet Another Stock Data Analysis")
 
 # allow user to upload a CSV file containing stock data
 uploaded_file = st.file_uploader(
@@ -21,10 +13,14 @@ uploaded_file = st.file_uploader(
     help="The file has to have at least a Date column and a Close column. Stock quotes should be sorted from oldest to newest. ",
 )
 
+# allow user to play around with the app without uploading the file
 if st.checkbox("Use example file"):
     uploaded_file = "pko_d.csv"
 
+# allow user to limit analysis period
 years = st.slider("How many years of data take into account?", 1, 20, 20)
+
+# welcome note and disclaimers
 with st.sidebar:
     st.write("**Welcome note**")
     st.write(
@@ -35,20 +31,39 @@ with st.sidebar:
         "Please note that the information provided by this app is for educational and informational purposes only. It is not intended to be used as a basis for making investment decisions. The results presented by the app are based on historical data and are not indicative of future performance. Users are advised to conduct their own research and seek the advice of a qualified financial advisor before making any investment decisions. The app's creators and developers are not responsible for any losses or damages that may occur as a result of using this app or relying on the information provided by it."
     )
 
+
+# -------------------------
+#
+#       MAIN APP CODE
+#
+# -------------------------
+
 if uploaded_file is not None:
+
+    # ----- data load ----
+
+    # we will analysis 14-day periods
     n_window = 14
+
+    # let's read data stock quotes from the csv
     df = pd.read_csv(uploaded_file)
+    df = df.set_index("Date")
+
+    # let's read headlines data
     headlines = pd.read_csv("headlines.csv")
     headlines_m = pd.read_csv("headlines_m.csv")
-    df = df.set_index("Date")
+
+    # ----- data manipulation ----
+
     # create a rolling window of 14 days
     df = df[-years * 365 :]
     rolling_window = df["Close"].rolling(window=n_window)
 
+    # if i would like to see all rolling windows in the future i can use this part:
     # dfa = [window.to_list() for window in rolling_window]
     # st.write(dfa)
 
-    # define a function to compute the similarity between the last 14 days and each 14-day window in the dataset
+    # define a function to compute the similarity between the last n days and each n-day window in the dataset
     def compute_similarity(window):
         last_n_days = df["Close"].iloc[-n_window:]
         similarity_scores = cosine_similarity(
@@ -56,11 +71,12 @@ if uploaded_file is not None:
         )
         return similarity_scores[0]
 
-    # compute the similarity between the last 7 days and each 7-day window in the dataset
+    # compute the similarity between the last n days and each n-day window in the dataset
     similarity_scores = rolling_window.apply(compute_similarity, raw=False)
     similarity_scores = similarity_scores.fillna(value=0)
     top_similarities = similarity_scores.argsort()[-10:]
 
+    # define a function to make plots
     def plot_dataframes(df1, df2):
         # Create the plots
         fig, ax = plt.subplots()
@@ -74,24 +90,30 @@ if uploaded_file is not None:
         # Display the chart using Streamlit
         st.pyplot(fig)
 
+    # ----- calculationsn ----
+
     i = 1
     for index in top_similarities:
-        # plot the last 14 days
-        # create a series with 7 null values
+
+        # create a series with 7 null values - this will become usefull in a minute
         null_series = pd.Series([None] * 7)
 
-        # has to be done in order to provide correct window
+        # has to be done in order to provide correct window for the tables and plots
         index = index - (n_window - 1)
 
+        # create data frame with n last days
+        df1 = df["Close"].iloc[-n_window:]
+
         # concatenate the original series and the null series
+        df1_plus_nulls = pd.concat([df1, null_series])
 
-        df1 = df["Close"].iloc[-14:]
-
-        df1_14 = pd.concat([df1, null_series])
-
+        # create a data frame for historical window
         df_past = df["Close"].iloc[index : index + 21]
 
+        # take into account only periods that large enough to take a peek into the future
         if len(df_past) == 21:
+
+            # ----- front end ----
 
             st.markdown("---")
             st.write("**Case " + str(i) + "**")
@@ -110,7 +132,7 @@ if uploaded_file is not None:
             with col3:
                 # Plot the datasets
                 st.write("**Plot**")
-                plot_dataframes(df1_14, df_past)
+                plot_dataframes(df1_plus_nulls, df_past)
                 st.write("Similarity score")
                 st.write(similarity_scores.iloc[index + 13])
             st.write(
@@ -146,4 +168,5 @@ if uploaded_file is not None:
                     st.write("No data")
             i += 1
 
-# Could you provide me with financial market headlines published on 2008-09-16. Present them in html code. Do not add references in list.
+# prompts for chat bot
+# What were the major events that affected the stock market in may 2005? Please present them in html code.
