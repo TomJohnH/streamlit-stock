@@ -15,7 +15,7 @@ uploaded_file = st.file_uploader(
 
 # allow user to play around with the app without uploading the file
 if st.checkbox("Use example file"):
-    uploaded_file = "pko_d.csv"
+    uploaded_file = "gs_us_d.csv"
 
 # allow user to limit analysis period
 years = st.slider("How many years of data take into account?", 1, 20, 20)
@@ -24,7 +24,10 @@ years = st.slider("How many years of data take into account?", 1, 20, 20)
 with st.sidebar:
     st.write("**Welcome note**")
     st.write(
-        "Welcome to the stock quote analysis app! The app allows users to easily compare the last 14 days of closing stock quotes to all historical 14 day windows. By doing so, similarity scores are calculated and results are presented in the form of tables and graphs. Additionally, if available, the app presents relevant news headlines for the historical period."
+        "Welcome to the stock quote analysis app! The app allows users to easily compare the last 14 days of closing stock quotes to all historical 14 day windows. By doing so, similarity scores are calculated and results are presented in the form of tables and graphs. Additionally, if available, the app presents relevant major events that affected the stock market for the historical period."
+    )
+    st.write(
+        """To rescale the historical data to current levels, please select the 'Scale results' checkbox."""
     )
     st.write("**Disclaimer**")
     st.write(
@@ -138,8 +141,8 @@ if uploaded_file is not None:
                 st.write("Similarity score")
                 st.write(similarity_scores.iloc[index + 13])
             st.write(
-                "**Financial market headlines published from "
-                + str(df.iloc[index].name)
+                "**Major events that affected the stock market in "
+                + str(df.iloc[index].name)[0:7]
                 + "**"
             )
             if headlines["Date"].eq(df.iloc[index].name).any():
@@ -171,4 +174,4 @@ if uploaded_file is not None:
             i += 1
 
 # prompts for chat bot
-# What were the major events that affected the stock market in may 2005? Please present them in html code.
+# What were the major events that affected the stock market in may 2005? Please present them in html code. Do not add references.
