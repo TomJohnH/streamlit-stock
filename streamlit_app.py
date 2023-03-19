@@ -30,7 +30,9 @@ with st.sidebar:
     st.write(
         "Please note that the information provided by this app is for educational and informational purposes only. It is not intended to be used as a basis for making investment decisions. The results presented by the app are based on historical data and are not indicative of future performance. Users are advised to conduct their own research and seek the advice of a qualified financial advisor before making any investment decisions. The app's creators and developers are not responsible for any losses or damages that may occur as a result of using this app or relying on the information provided by it."
     )
-
+    st.write(
+        "News headlines were generated using Bing Chat and were not independently reviewed."
+    )
 
 # -------------------------
 #
