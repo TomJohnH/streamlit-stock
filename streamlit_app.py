@@ -14,9 +14,6 @@ st.title("Stock Data Analysis")
 #
 ######
 
-example = """<ul> <li>2008-08-28: Fed approves $200 billion emergency loan program for banks</li> <li>2008-08-29: Fannie Mae and Freddie Mac shares plunge amid bailout fears</li> <li>2008-09-02: Lehman Brothers reports $3.9 billion loss, plans to sell assets</li> <li>2008-09-07: US government takes over Fannie Mae and Freddie Mac</li> <li>2008-09-08: Bank of America agrees to buy Merrill Lynch for $50 billion</li> <li>2008-09-15: Lehman Brothers files for bankruptcy, AIG seeks federal aid</li> <li>2008-09-16: Fed bails out AIG with $85 billion loan, Barclays buys Lehman’s US assets</li> <li>2008-09-17: Fed lends $180 billion to foreign central banks, SEC bans short-selling of financial stocks</li> <li>2008-09-18: Treasury proposes $700 billion bailout plan for financial firms</li> <li>2008-09-19: Fed and other central banks inject $180 billion into money markets, US stocks rally</li> <li>2008-09-21: Goldman Sachs and Morgan Stanley become bank holding companies</li> <li>2008-09-23: Fed lends $30 billion to JPMorgan Chase to buy Bear Stearns’ assets</li> <li>2008-09-25: Washington Mutual seized by regulators, sold to JPMorgan Chase</li>"""
-
-
 # allow user to upload a CSV file containing stock data
 uploaded_file = st.file_uploader(
     "Upload stock quotes *.csv",
@@ -28,7 +25,15 @@ if st.checkbox("Use example file"):
     uploaded_file = "pko_d.csv"
 
 years = st.slider("How many years of data take into account?", 1, 20, 20)
-
+with st.sidebar:
+    st.write("**Welcome note**")
+    st.write(
+        "Welcome to the stock quote analysis app! The app allows users to easily compare the last 14 days of closing stock quotes to all historical 14 day windows. By doing so, similarity scores are calculated and results are presented in the form of tables and graphs. Additionally, if available, the app presents relevant news headlines for the historical period."
+    )
+    st.write("**Disclaimer**")
+    st.write(
+        "Please note that the information provided by this app is for educational and informational purposes only. It is not intended to be used as a basis for making investment decisions. The results presented by the app are based on historical data and are not indicative of future performance. Users are advised to conduct their own research and seek the advice of a qualified financial advisor before making any investment decisions. The app's creators and developers are not responsible for any losses or damages that may occur as a result of using this app or relying on the information provided by it."
+    )
 
 if uploaded_file is not None:
     n_window = 14
@@ -69,7 +74,6 @@ if uploaded_file is not None:
         # Display the chart using Streamlit
         st.pyplot(fig)
 
-    st.write("Top most similar patterns:")
     i = 1
     for index in top_similarities:
         # plot the last 14 days
