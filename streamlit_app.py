@@ -33,6 +33,8 @@ years = st.slider("How many years of data take into account?", 1, 20, 20)
 if uploaded_file is not None:
     n_window = 14
     df = pd.read_csv(uploaded_file)
+    headlines = pd.read_csv("headlines.csv")
+    headlines_m = pd.read_csv("headlines_m.csv")
     df = df.set_index("Date")
     # create a rolling window of 14 days
     df = df[-years * 365 :]
@@ -47,20 +49,12 @@ if uploaded_file is not None:
         similarity_scores = cosine_similarity(
             last_n_days.values.reshape(1, -1), window.values.reshape(1, -1)
         )
-        # st.write(window.values)
-        # st.write(similarity_scores)
         return similarity_scores[0]
 
     # compute the similarity between the last 7 days and each 7-day window in the dataset
     similarity_scores = rolling_window.apply(compute_similarity, raw=False)
     similarity_scores = similarity_scores.fillna(value=0)
-    # st.write(similarity_scores)
-    # sort the similarity scores in descending order
     top_similarities = similarity_scores.argsort()[-10:]
-    # st.write(top_similarities)
-    # st.write(similarity_scores[top_similarities])
-
-    # st.write(df["Close"].iloc[953])
 
     def plot_dataframes(df1, df2):
         # Create the plots
@@ -75,7 +69,7 @@ if uploaded_file is not None:
         # Display the chart using Streamlit
         st.pyplot(fig)
 
-    st.write("Top 5 most similar patterns:")
+    st.write("Top most similar patterns:")
     i = 1
     for index in top_similarities:
         # plot the last 14 days
@@ -120,10 +114,32 @@ if uploaded_file is not None:
                 + str(df.iloc[index].name)
                 + "**"
             )
-            if str(df.iloc[index].name) == "2008-08-28":
-                st.markdown(example, unsafe_allow_html=True)
+            if headlines["Date"].eq(df.iloc[index].name).any():
+
+                html = str(
+                    headlines[headlines["Date"] == df.iloc[index].name][
+                        "Headlines"
+                    ].values[0]
+                )
+                # st.write(html)
+                st.markdown(
+                    html,
+                    unsafe_allow_html=True,
+                )
+
             else:
-                st.write("Coming soon")
+                if headlines_m["Date"].eq(df.iloc[index].name[0:7]).any():
+                    html = str(
+                        headlines_m[headlines_m["Date"] == df.iloc[index].name[0:7]][
+                            "Headlines"
+                        ].values[0]
+                    )
+                    st.markdown(
+                        html,
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.write("No data")
             i += 1
 
 # Could you provide me with financial market headlines published on 2008-09-16. Present them in html code. Do not add references in list.
