@@ -86,7 +86,7 @@ if uploaded_file is not None:
         ax.plot(range(1, 22), df2, label="Similar case from the past")
 
         # Set the chart title and legend
-        ax.set_title("Two Plots on One Chart")
+        ax.set_title("Stock quotes similarity")
         ax.legend()
 
         # Display the chart using Streamlit
