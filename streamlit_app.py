@@ -52,6 +52,12 @@ if uploaded_file is not None:
 
     # let's read data stock quotes from the csv
     df = pd.read_csv(uploaded_file)
+
+    if "Data" in df.columns:
+        df.rename(columns={"Data": "Date"}, inplace=True)
+    if "Zamkniecie" in df.columns:
+        df.rename(columns={"Zamkniecie": "Close"}, inplace=True)
+
     df = df.set_index("Date")
 
     # let's read headlines data
