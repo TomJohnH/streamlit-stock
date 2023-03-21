@@ -57,6 +57,12 @@ if uploaded_file is not None:
         df.rename(columns={"Data": "Date"}, inplace=True)
     if "Zamkniecie" in df.columns:
         df.rename(columns={"Zamkniecie": "Close"}, inplace=True)
+    if "Najwyzszy" in df.columns:
+        df.rename(columns={"Najwyzszy": "Max"}, inplace=True)
+    if "Najnizszy" in df.columns:
+        df.rename(columns={"Najnizszy": "Min"}, inplace=True)
+    if "Wolumen" in df.columns:
+        df.rename(columns={"Wolumen": "Volume"}, inplace=True)
 
     df = df.set_index("Date")
 
