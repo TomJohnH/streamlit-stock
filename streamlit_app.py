@@ -182,7 +182,12 @@ if uploaded_file is not None:
                         unsafe_allow_html=True,
                     )
                 else:
-                    st.write("No data")
+                    st.write("No data. Chat Bing prompt:")
+                    st.write(
+                        " *What were the major events that affected the stock market in "
+                        + str(df.iloc[index].name[0:7])
+                        + "?*"
+                    )
             i += 1
 
 # prompts for chat bot
