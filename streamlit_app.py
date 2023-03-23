@@ -110,6 +110,7 @@ if uploaded_file is not None:
     # ----- calculationsn ----
 
     i = 1
+    df_past_list = []
     for index in top_similarities:
 
         # create a series with 7 null values - this will become usefull in a minute
@@ -126,7 +127,8 @@ if uploaded_file is not None:
 
         # create a data frame for historical window
         df_past = df["Close"].iloc[index : index + 21]
-
+        df_past_adj = df_past * (df["Close"].iloc[-14:][0] / df_past[0])
+        df_past_list.append(df_past_adj.values.tolist())
         # take into account only periods that large enough to take a peek into the future
         if len(df_past) == 21:
 
@@ -189,6 +191,20 @@ if uploaded_file is not None:
                         + "?*"
                     )
             i += 1
+
+    st.markdown("---")
+    st.write("**Results summarized on one chart**")
+    df_past_list = pd.DataFrame(df_past_list)
+    # st.write(df_past_list)
+    fig, ax = plt.subplots()
+    for i in range(0, len(df_past_list)):
+        ax.plot(range(1, 22), df_past_list.iloc[i], label="Last 14 days", alpha=0.2)
+    ax.plot(range(1, 22), df1_plus_nulls, label="Last 14 days", color="red")
+    # Set the chart title and legend
+    ax.set_title("Stock quotes similarity")
+
+    # Display the chart using Streamlit
+    st.pyplot(fig)
 
 # prompts for chat bot
 # What were the major events that affected the stock market in may 2005? Please present them in html code. Do not add references.
