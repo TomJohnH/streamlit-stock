@@ -111,6 +111,7 @@ if uploaded_file is not None:
 
     i = 1
     df_past_list = []
+    df_past_list_last = []
     for index in top_similarities:
 
         # create a series with 7 null values - this will become usefull in a minute
@@ -127,8 +128,17 @@ if uploaded_file is not None:
 
         # create a data frame for historical window
         df_past = df["Close"].iloc[index : index + 21]
+
+        # create a data frame adjusted for first period
         df_past_adj = df_past * (df["Close"].iloc[-14:][0] / df_past[0])
+
+        # create a data frame adjusted for first period
+        df_past_adj_last = df_past * (df["Close"].iloc[-1:][0] / df_past[13])
+
+        # append lists
         df_past_list.append(df_past_adj.values.tolist())
+        df_past_list_last.append(df_past_adj_last.values.tolist())
+
         # take into account only periods that large enough to take a peek into the future
         if len(df_past) == 21:
 
@@ -193,12 +203,27 @@ if uploaded_file is not None:
             i += 1
 
     st.markdown("---")
-    st.write("**Results summarized on one chart**")
+    st.write("**Results summarized on one chart (scaled to first period)**")
     df_past_list = pd.DataFrame(df_past_list)
     # st.write(df_past_list)
     fig, ax = plt.subplots()
     for i in range(0, len(df_past_list)):
         ax.plot(range(1, 22), df_past_list.iloc[i], label="Last 14 days", alpha=0.2)
+    ax.plot(range(1, 22), df1_plus_nulls, label="Last 14 days", color="red")
+    # Set the chart title and legend
+    ax.set_title("Stock quotes similarity")
+
+    # Display the chart using Streamlit
+    st.pyplot(fig)
+
+    st.write("**Results summarized on one chart (scaled to last period)**")
+    df_past_list_last = pd.DataFrame(df_past_list_last)
+    # st.write(df_past_list)
+    fig, ax = plt.subplots()
+    for i in range(0, len(df_past_list_last)):
+        ax.plot(
+            range(1, 22), df_past_list_last.iloc[i], label="Last 14 days", alpha=0.2
+        )
     ax.plot(range(1, 22), df1_plus_nulls, label="Last 14 days", color="red")
     # Set the chart title and legend
     ax.set_title("Stock quotes similarity")
