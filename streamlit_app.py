@@ -212,6 +212,7 @@ if uploaded_file is not None:
     ax.plot(range(1, 22), df1_plus_nulls, label="Last 14 days", color="red")
     # Set the chart title and legend
     ax.set_title("Stock quotes similarity")
+    ax.grid(color="grey", linestyle="-", linewidth=0.1, axis="y")
 
     # Display the chart using Streamlit
     st.pyplot(fig)
@@ -227,6 +228,7 @@ if uploaded_file is not None:
     ax.plot(range(1, 22), df1_plus_nulls, label="Last 14 days", color="red")
     # Set the chart title and legend
     ax.set_title("Stock quotes similarity")
+    ax.grid(color="grey", linestyle="-", linewidth=0.1, axis="y")
 
     # Display the chart using Streamlit
     st.pyplot(fig)
