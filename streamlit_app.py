@@ -4,6 +4,26 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 import matplotlib.pyplot as plt
 
+#
+#   SESSION STATES
+#
+
+if "labels" not in st.session_state:
+    st.session_state["labels"] = False
+
+
+def lbl():
+    if st.session_state["labels"]:
+        st.session_state["labels"] = False
+    else:
+        st.session_state["labels"] = True
+
+
+#
+#   THE APP
+#
+
+
 st.title("Yet Another Stock Data Analysis")
 
 # allow user to upload a CSV file containing stock data
@@ -209,7 +229,14 @@ if uploaded_file is not None:
     fig, ax = plt.subplots()
     for i in range(0, len(df_past_list)):
         ax.plot(range(1, 22), df_past_list.iloc[i], label="Last 14 days", alpha=0.2)
-    ax.plot(range(1, 22), df1_plus_nulls, label="Last 14 days", color="red")
+    ax.plot(
+        range(1, 22),
+        df1_plus_nulls,
+        label="Last 14 days",
+        color="red",
+        marker="o",
+        markersize=3,
+    )
     # Set the chart title and legend
     ax.set_title("Stock quotes similarity")
     ax.grid(color="grey", linestyle="-", linewidth=0.1, axis="y")
@@ -225,13 +252,32 @@ if uploaded_file is not None:
         ax.plot(
             range(1, 22), df_past_list_last.iloc[i], label="Last 14 days", alpha=0.2
         )
-    ax.plot(range(1, 22), df1_plus_nulls, label="Last 14 days", color="red")
+    ax.plot(
+        range(1, 22),
+        df1_plus_nulls,
+        label="Last 14 days",
+        color="red",
+        marker="o",
+        markersize=3,
+    )
+    if st.session_state["labels"]:
+        for i in range(0, 14):
+            ax.annotate(
+                list(df1_plus_nulls)[i],
+                (i, list(df1_plus_nulls)[i]),
+                size=8,
+                # bbox=dict(boxstyle="round4,pad=.5", fc="0.8"),
+                ha="center",
+                # va="top",
+            )
     # Set the chart title and legend
     ax.set_title("Stock quotes similarity")
     ax.grid(color="grey", linestyle="-", linewidth=0.1, axis="y")
 
     # Display the chart using Streamlit
     st.pyplot(fig)
+
+    st.checkbox("Show labels", on_change=lbl)
 
 # prompts for chat bot
 # What were the major events that affected the stock market in may 2005? Please present them in html code. Do not add references.
