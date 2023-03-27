@@ -4,9 +4,11 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 import matplotlib.pyplot as plt
 
+# -------------------------
 #
-#   SESSION STATES
+#       SESSION STATES
 #
+# -------------------------
 
 if "labels" not in st.session_state:
     st.session_state["labels"] = False
@@ -19,10 +21,30 @@ def lbl():
         st.session_state["labels"] = True
 
 
+# -------------------------
 #
-#   THE APP
+#       CSS
 #
+# -------------------------
 
+st.markdown(
+    """
+    <style type="text/css" media="print">
+      hr
+      {
+        page-break-after: always;
+        page-break-inside: avoid;
+      }
+    </style>
+""",
+    unsafe_allow_html=True,
+)
+
+# -------------------------
+#
+#       INTRO
+#
+# -------------------------
 
 st.title("Yet Another Stock Data Analysis")
 
