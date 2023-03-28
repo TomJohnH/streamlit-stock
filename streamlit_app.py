@@ -266,7 +266,21 @@ if uploaded_file is not None:
     # Display the chart using Streamlit
     st.pyplot(fig)
 
+    if "projection" not in st.session_state:
+        st.session_state.projection = [None] * 21
+
     st.write("**Results summarized on one chart (scaled to last period)**")
+
+    value = st.slider("Select \% change from last close", -3.0, 3.0, 0.0)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.code(list(df1_plus_nulls)[13])
+    with col2:
+        st.code(f"{(list(df1_plus_nulls)[13] * (1 + value / 100)):.2f}")
+
+    st.session_state.projection[13] = list(df1_plus_nulls)[13]
+    st.session_state.projection[14] = list(df1_plus_nulls)[13] * (1 + value / 100)
+
     df_past_list_last = pd.DataFrame(df_past_list_last)
     # st.write(df_past_list)
     fig, ax = plt.subplots()
@@ -282,6 +296,16 @@ if uploaded_file is not None:
         marker="o",
         markersize=3,
     )
+
+    ax.plot(
+        range(1, 22),
+        st.session_state.projection,
+        label="Last 14 days",
+        color="black",
+        marker="o",
+        markersize=3,
+    )
+
     if st.session_state["labels"]:
         for i in range(0, 14):
             ax.annotate(
@@ -300,6 +324,7 @@ if uploaded_file is not None:
     st.pyplot(fig)
 
     st.checkbox("Show labels", on_change=lbl)
+
 
 # prompts for chat bot
 # What were the major events that affected the stock market in may 2005? Please present them in html code. Do not add references.
