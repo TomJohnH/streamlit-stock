@@ -245,7 +245,7 @@ if uploaded_file is not None:
             i += 1
 
     st.markdown("---")
-    st.write("**Results summarized on one chart (scaled to first period)**")
+    st.write("**Results summarized on one chart (scaled to the first period)**")
     df_past_list = pd.DataFrame(df_past_list)
     # st.write(df_past_list)
     fig, ax = plt.subplots()
@@ -269,7 +269,7 @@ if uploaded_file is not None:
     if "projection" not in st.session_state:
         st.session_state.projection = [None] * 21
 
-    st.write("**Results summarized on one chart (scaled to last period)**")
+    st.write("**Results summarized on one chart (scaled to the last period)**")
 
     value = st.slider("Select \% change from last close", -3.0, 3.0, 0.0)
     col1, col2 = st.columns(2)
