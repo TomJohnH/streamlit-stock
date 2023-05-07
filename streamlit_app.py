@@ -42,6 +42,39 @@ st.markdown(
 
 # -------------------------
 #
+#       FUNCTIONS
+#
+# -------------------------
+
+# define a function to compute the similarity between the last n days and each n-day window in the dataset
+def compute_similarity(window):
+    last_n_days = df["Close"].iloc[-n_window:]
+    similarity_scores = cosine_similarity(
+        last_n_days.values.reshape(1, -1), window.values.reshape(1, -1)
+    )
+    return similarity_scores[0]
+
+def plot_dataframes(df1, df2):
+    # Create the plots
+    fig, ax = plt.subplots()
+    ax.plot(range(1, 22), df1, label="Last 14 days")
+    ax.plot(range(1, 22), df2, label="Similar case from the past")
+
+    # Set the chart title and legend
+    ax.set_title("Stock quotes similarity")
+    ax.legend()
+
+    # Display the chart using Streamlit
+    st.pyplot(fig)
+
+def create_null_series(length):
+    return pd.Series([None] * length)
+
+def adjust_dataframe(df_past, df, adjust_index):
+    return df_past * (df["Close"].iloc[adjust_index:][0] / df_past[0])
+
+# -------------------------
+#
 #       INTRO
 #
 # -------------------------
@@ -122,32 +155,13 @@ if uploaded_file is not None:
     # dfa = [window.to_list() for window in rolling_window]
     # st.write(dfa)
 
-    # define a function to compute the similarity between the last n days and each n-day window in the dataset
-    def compute_similarity(window):
-        last_n_days = df["Close"].iloc[-n_window:]
-        similarity_scores = cosine_similarity(
-            last_n_days.values.reshape(1, -1), window.values.reshape(1, -1)
-        )
-        return similarity_scores[0]
-
     # compute the similarity between the last n days and each n-day window in the dataset
     similarity_scores = rolling_window.apply(compute_similarity, raw=False)
     similarity_scores = similarity_scores.fillna(value=0)
     top_similarities = similarity_scores.argsort()[-10:]
 
     # define a function to make plots
-    def plot_dataframes(df1, df2):
-        # Create the plots
-        fig, ax = plt.subplots()
-        ax.plot(range(1, 22), df1, label="Last 14 days")
-        ax.plot(range(1, 22), df2, label="Similar case from the past")
 
-        # Set the chart title and legend
-        ax.set_title("Stock quotes similarity")
-        ax.legend()
-
-        # Display the chart using Streamlit
-        st.pyplot(fig)
 
     # ----- calculationsn ----
 
@@ -157,7 +171,7 @@ if uploaded_file is not None:
     for index in top_similarities:
 
         # create a series with 7 null values - this will become usefull in a minute
-        null_series = pd.Series([None] * 7)
+        null_series = create_null_series(7)
 
         # has to be done in order to provide correct window for the tables and plots
         index = index - (n_window - 1)
@@ -190,9 +204,12 @@ if uploaded_file is not None:
             st.write("**Case " + str(i) + "**")
             adjusted = st.checkbox("Scale result?", key=index)
 
-            if adjusted:
-                df_past = df_past * (df["Close"].iloc[-14:][0] / df_past[0])
 
+
+
+            if adjusted:
+                #df_past = df_past * (df["Close"].iloc[-14:][0] / df_past[0])
+                df_past = adjust_dataframe(df_past,df,-14)
             col1, col2, col3 = st.columns(3)
             with col1:
                 st.write("**Last 14 days**")
