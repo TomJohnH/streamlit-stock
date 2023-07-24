@@ -202,7 +202,7 @@ if uploaded_file is not None:
 
             st.markdown("---")
             st.write("**Case " + str(i) + "**")
-            adjusted = st.checkbox("Scale result?", key=index)
+            adjusted = st.checkbox("Scale result?", key=index,value=True)
 
 
 
